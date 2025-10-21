@@ -1,15 +1,15 @@
 local Players = game:GetService("Players")
 local v6 = Players.LocalPlayer
 
--- ==========================================
--- BYPASS LIST: Thêm username vào đây (viết thường)
--- ==========================================
-local bypassList = {
-    "username1",
-    "username2",
-    "yourusername"
-}
--- ==========================================
+-- Lấy bypass list từ config ngoài
+local bypassList = {}
+if getgenv().ConfigV4 and getgenv().ConfigV4["Bypass Kick"] then
+    for _, username in pairs(getgenv().ConfigV4["Bypass Kick"]) do
+        if username ~= "" then
+            table.insert(bypassList, username:lower())
+        end
+    end
+end
 
 local function createGui()
     local screen = Instance.new("ScreenGui")
@@ -41,10 +41,10 @@ local function buildKickMessage(tier)
 end
 
 local function getRaceAndTier(timeoutSec)
-	timeoutSec = timeoutSec or 1
-	local race, tier
-	pcall(function()
-		local d = v6:FindFirstChild("Data") or v6:WaitForChild("Data", timeoutSec)
+    timeoutSec = timeoutSec or 1
+    local race, tier
+    pcall(function()
+        local d = v6:FindFirstChild("Data") or v6:WaitForChild("Data", timeoutSec)
         if d then
             for _, c in pairs(d:GetDescendants()) do
                 if c:IsA("StringValue") and c.Name:lower() == "race" then
@@ -54,8 +54,8 @@ local function getRaceAndTier(timeoutSec)
                 end
             end
         end
-	end)
-	return race, tier
+    end)
+    return race, tier
 end
 
 local function isPlayerBypassed()
