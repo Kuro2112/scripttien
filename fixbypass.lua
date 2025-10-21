@@ -5,7 +5,7 @@ local v6 = Players.LocalPlayer
 local bypassList = {}
 if getgenv().ConfigV4 and getgenv().ConfigV4["Bypass Kick"] then
     for _, username in pairs(getgenv().ConfigV4["Bypass Kick"]) do
-        if username ~= "" then
+        if username and username ~= "" then
             table.insert(bypassList, username:lower())
         end
     end
@@ -60,7 +60,12 @@ end
 
 local function isPlayerBypassed()
     local username = v6.Name:lower()
-    return table.find(bypassList, username) ~= nil
+    for _, bypassName in pairs(bypassList) do
+        if bypassName == username then
+            return true
+        end
+    end
+    return false
 end
 
 task.spawn(function()
@@ -68,6 +73,11 @@ task.spawn(function()
         local _, tier = getRaceAndTier(0)
         local n = tonumber(tostring(tier or ""))
         tierLabel.Text = "Tier: " .. (n and tostring(n) or "N/A")
+        
+        -- Debug: In ra để kiểm tra
+        print("Current player:", v6.Name)
+        print("Bypass list:", table.concat(bypassList, ", "))
+        print("Is bypassed:", isPlayerBypassed())
         
         if n and n >= 6 and not isPlayerBypassed() then
             v6:Kick(buildKickMessage(n))
