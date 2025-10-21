@@ -1,15 +1,40 @@
 local Players = game:GetService("Players")
 local v6 = Players.LocalPlayer
 
+-- Debug function
+local function debugPrint(...)
+    print("[BYPASS DEBUG]", ...)
+end
+
+-- Đợi config load
+task.wait(0.5)
+
 -- Lấy bypass list từ config ngoài
 local bypassList = {}
-if getgenv().ConfigV4 and getgenv().ConfigV4["Bypass Kick"] then
-    for _, username in pairs(getgenv().ConfigV4["Bypass Kick"]) do
-        if username and username ~= "" then
-            table.insert(bypassList, username:lower())
+debugPrint("Checking for config...")
+
+if getgenv().ConfigV4 then
+    debugPrint("ConfigV4 found!")
+    if getgenv().ConfigV4["Bypass Kick"] then
+        debugPrint("Bypass Kick found!")
+        for i, username in pairs(getgenv().ConfigV4["Bypass Kick"]) do
+            debugPrint("Processing username #"..i..":", username)
+            if username and username ~= "" then
+                local lowered = tostring(username):lower()
+                table.insert(bypassList, lowered)
+                debugPrint("Added to bypass list:", lowered)
+            end
         end
+    else
+        debugPrint("Bypass Kick NOT found in config!")
     end
+else
+    debugPrint("ConfigV4 NOT found!")
 end
+
+debugPrint("Final bypass list:", table.concat(bypassList, ", "))
+debugPrint("Current player username:", v6.Name)
+debugPrint("Current player username (lowercase):", v6.Name:lower())
 
 local function createGui()
     local screen = Instance.new("ScreenGui")
@@ -62,6 +87,7 @@ local function isPlayerBypassed()
     local username = v6.Name:lower()
     for _, bypassName in pairs(bypassList) do
         if bypassName == username then
+            debugPrint("MATCH FOUND! Player is bypassed!")
             return true
         end
     end
@@ -74,14 +100,17 @@ task.spawn(function()
         local n = tonumber(tostring(tier or ""))
         tierLabel.Text = "Tier: " .. (n and tostring(n) or "N/A")
         
-        -- Debug: In ra để kiểm tra
-        print("Current player:", v6.Name)
-        print("Bypass list:", table.concat(bypassList, ", "))
-        print("Is bypassed:", isPlayerBypassed())
+        local bypassed = isPlayerBypassed()
+        debugPrint("Tier:", n, "| Bypassed:", bypassed)
         
-        if n and n >= 6 and not isPlayerBypassed() then
-            v6:Kick(buildKickMessage(n))
-            break
+        if n and n >= 6 then
+            if not bypassed then
+                debugPrint("KICKING PLAYER - Tier >= 6 and not bypassed")
+                v6:Kick(buildKickMessage(n))
+                break
+            else
+                debugPrint("Player is BYPASSED - Not kicking")
+            end
         end
         task.wait(1)
     end
