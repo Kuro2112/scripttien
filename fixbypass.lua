@@ -1,15 +1,12 @@
 local Players = game:GetService("Players")
 local v6 = Players.LocalPlayer
 
--- Debug function
 local function debugPrint(...)
     print("[BYPASS DEBUG]", ...)
 end
 
--- Đợi config load
 task.wait(0.5)
 
--- Lấy bypass list từ config ngoài
 local bypassList = {}
 debugPrint("Checking for config...")
 
