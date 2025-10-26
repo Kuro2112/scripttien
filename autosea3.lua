@@ -1,3 +1,4 @@
+task.wait(4)
 getgenv().team = "Marines" -- Pirates
 
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer:FindFirstChild("DataLoaded")
