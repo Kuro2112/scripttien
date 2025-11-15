@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local TeleportService = game:GetService("TeleportService")
 
 if setfpscap then setfpscap(20) end
 
@@ -266,6 +267,73 @@ copyBtnGradient.Color = ColorSequence.new{
 copyBtnGradient.Rotation = 45
 copyBtnGradient.Parent = copyBtn
 
+-- Join Server Card
+local joinCard = Instance.new("Frame")
+joinCard.Name = "JoinServer"
+joinCard.Size = UDim2.new(1, 0, 0, 68)
+joinCard.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
+joinCard.BorderSizePixel = 0
+joinCard.LayoutOrder = 5
+joinCard.Parent = content
+
+local joinCorner = Instance.new("UICorner")
+joinCorner.CornerRadius = UDim.new(0, 10)
+joinCorner.Parent = joinCard
+
+local joinGradient = Instance.new("UIGradient")
+joinGradient.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 28, 40)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 20, 28))
+}
+joinGradient.Rotation = 90
+joinGradient.Parent = joinCard
+
+local joinStroke = Instance.new("UIStroke")
+joinStroke.Color = Color3.fromRGB(255, 255, 255)
+joinStroke.Thickness = 1
+joinStroke.Transparency = 0.9
+joinStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+joinStroke.Parent = joinCard
+
+local joinLabel = Instance.new("TextLabel")
+joinLabel.Size = UDim2.new(1, -16, 0, 14)
+joinLabel.Position = UDim2.new(0, 10, 0, 8)
+joinLabel.BackgroundTransparency = 1
+joinLabel.Text = "Join Server"
+joinLabel.TextColor3 = Color3.fromRGB(150, 160, 180)
+joinLabel.TextSize = 10
+joinLabel.Font = Enum.Font.GothamMedium
+joinLabel.TextXAlignment = Enum.TextXAlignment.Left
+joinLabel.Parent = joinCard
+
+local joinInputBg = Instance.new("Frame")
+joinInputBg.Size = UDim2.new(1, -20, 0, 26)
+joinInputBg.Position = UDim2.new(0, 10, 0, 26)
+joinInputBg.BackgroundColor3 = Color3.fromRGB(18, 20, 28)
+joinInputBg.BorderSizePixel = 0
+joinInputBg.Parent = joinCard
+
+local joinInputCorner = Instance.new("UICorner")
+joinInputCorner.CornerRadius = UDim.new(0, 6)
+joinInputCorner.Parent = joinInputBg
+
+local joinInput = Instance.new("TextBox")
+joinInput.Name = "Input"
+joinInput.Size = UDim2.new(1, -16, 1, 0)
+joinInput.Position = UDim2.new(0, 8, 0, 0)
+joinInput.BackgroundTransparency = 1
+joinInput.Text = ""
+joinInput.PlaceholderText = ""
+joinInput.TextColor3 = Color3.fromRGB(200, 210, 230)
+joinInput.PlaceholderColor3 = Color3.fromRGB(100, 110, 130)
+joinInput.TextSize = 9
+joinInput.Font = Enum.Font.GothamMedium
+joinInput.TextXAlignment = Enum.TextXAlignment.Left
+joinInput.ClearTextOnFocus = false
+joinInput.Parent = joinInputBg
+
+
+
 local isOpen = true
 local lastFrameTime = tick()
 local frameCounter = 0
@@ -327,6 +395,13 @@ copyBtn.MouseButton1Click:Connect(function()
 	TweenService:Create(copyBtn, TweenInfo.new(0.2), {
 		BackgroundColor3 = Color3.fromRGB(120, 145, 255)
 	}):Play()
+end)
+
+joinInput:GetPropertyChangedSignal("Text"):Connect(function()
+	local jobId = joinInput.Text:gsub("%s+", "")
+	if #jobId >= 36 then
+		TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, player)
+	end
 end)
 
 RunService.RenderStepped:Connect(function()
